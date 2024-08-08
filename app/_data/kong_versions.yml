@@ -335,6 +335,8 @@
 - edition: gateway-operator
   version: 1.4.0
   release: 1.4.x
+  releaseDate: "TBA"
+  endOfLifeDate: "TBA"
   label: unreleased
 - edition: mesh
   version: 1.2.6
