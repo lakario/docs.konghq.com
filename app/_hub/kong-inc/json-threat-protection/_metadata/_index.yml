@@ -1,0 +1,23 @@
+name: Kong JSON Threat Protection
+search_aliases:
+  - json threat protection
+  - json-threat-protection
+dbless_compatible: 'yes'
+free: false
+
+publisher: Kong Inc.
+
+type: plugin
+
+categories:
+  - security
+
+desc: Validate JSON against a security policy
+
+enterprise: true
+
+konnect: false
+
+network_config_opts: All
+
+notes: --
