@@ -7,7 +7,7 @@ title: Basic config examples
 
 The following examples provide some typical configurations for enabling the `json-threat-protection` plugin on a [service]({{ site.links.web }}/gateway/api/admin-ee/latest/#/Services).
 
-{ % navtabs %}
+{% navtabs %}
 {% navtab Enable on a service %}
 
 Make the following request:
@@ -25,7 +25,7 @@ curl -X POST http://localhost:8001/services/{serviceName|Id}/plugins \
   --data "config.error_message=BadRequest1"
 ```
 
-{$ endnavtab %}
+{% endnavtab %}
 
 {% navtab Enable on a route %}
 
@@ -44,7 +44,7 @@ curl -X POST http://localhost:8001/routes/{routeName|Id}/plugins \
   --data "config.error_message=BadRequest1"
 ```
 
-{$ endnavtab %}
+{% endnavtab %}
 
 {% navtab Enable globally %}
 
@@ -63,6 +63,6 @@ curl -X POST http://localhost:8001/plugins/ \
   --data "config.error_message=BadRequest1"
 ```
 
-{$ endnavtab %}
+{% endnavtab %}
 
-{ % endnavtabs %}
+{% endnavtabs %}
