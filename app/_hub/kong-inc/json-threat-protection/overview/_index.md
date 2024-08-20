@@ -2,9 +2,9 @@
 nav_title: Overview
 ---
 
-The JSON Threat Protection plugin provides security validation on various aspects of JSON to ensure that the incoming JSON in requests adheres to the security policy limits.
+The JSON Threat Protection plugin provides security validation against various aspects of JSON structure. The plugin validates the incoming JSON request body to ensure the payload adheres to the policy limits, regardless of whether the `Content-Type` header exists or is set to `application/json`. Requests violating the policy will be considered malicious. The plugin can be configured to drop such requests thus protecting it from reaching the service. Optionally, the plugin can operate in tap mode to monitor the traffic.
 
-It will check the following points:
+The plugin will check the following limits:
 
 - Maximum container depth of the entire JSON
 - Maximum number of array elements
@@ -29,11 +29,14 @@ For example, for the following JSON:
 - Maximum length of object keys: 7 (`parents`)
 - Maximum length of strings: 6 (`Joseph`)
 
+Additionally, we have added a limit on the request body size, which can effectively reduce the resource overhead and potential attack risks associated with excessively large bodies.
 
 
 ## Using the plugin
 
-We first create a service and route, and then create a JSON-threat-protection policy.
+In this example, we will first deploy a service listening on port 80. When accessed successfully, it will respond with `200 OK`. Next we will create a service in Kong and point to the service we just deployed. Then, we will create a route for this service and enforce payload limits by enabling the JSON-threat protection policy on this route. We'll configure the plugin to reject violating requests.
+
+Kong inspects the incoming requests, validates the payload adheres to the limits and rejects requests that violate the policy.
 
 
 
@@ -44,8 +47,6 @@ curl -i -s -X POST http://localhost:8001/services \
   --data name=example_service \
   --data url='http://localhost/'
 ```
-
-In this example, an Nginx instance is started locally with the default port 80.
 
 The response is:
 
@@ -136,7 +137,29 @@ curl -X POST http://127.0.0.1:8001/plugins \
   --data "config.error_message=BadRequest1"
 ```
 
-The response is:
+The configuration fields have the following meanings:
+
+- `config.max_body_size=1024`: The request body must not exceed 1024 bytes.
+- `config.max_container_depth=2`: The maximum depth of the container is 2.
+- `config.max_object_entry_count=4`: The number of object entries must not exceed 4.
+- `config.max_object_entry_name_length=7`: The key for an object entry must not exceed 7 bytes.
+- `config.max_array_element_count=2`: The number of array elements must not exceed 2.
+- `config.max_string_value_length=6`: The length of string values must not exceed 6 bytes.
+- `config.enforce_mode=block`: Enables `block` mode, where the request will not be proxied to the upstream service if the JSON violates the above limits.
+- `config.error_status_code=400`: When a JSON violation occurs, Kong returns an error code `400`.
+- `config.error_message=BadRequest1`: When a JSON violation occurs, Kong returns the error message `BadRequest1`.
+
+**Tap Mode**
+In tap mode, the plugin will inspect the JSON in the request body, but if there are any violations of the limits, it will not block the request. Instead, it will log a warning and proxy the request to the upstream service. In other words, in tap mode, the plugin only monitors the traffic.
+
+If we want to enable Tap mode, we only need to set `config.enforce_mode` to `log_only`, like this:
+
+```
+config.enforce_mode=log_only
+```
+
+
+After sending the above request, we will receive the following response:
 
 ```json
 {
@@ -178,7 +201,7 @@ The response is:
 
 ## Examples:
 
-This request will successfully fetch the default page from the upstream Nginx.
+This request is successfully proxied to returns a response back
 
 ```bash
 curl -XPOST http://127.1:8000/ \
@@ -189,29 +212,7 @@ curl -XPOST http://127.1:8000/ \
 The response is:
 
 ```html
-<!DOCTYPE html>
-<html>
-<head>
-<title>Welcome to nginx!</title>
-<style>
-html { color-scheme: light dark; }
-body { width: 35em; margin: 0 auto;
-font-family: Tahoma, Verdana, Arial, sans-serif; }
-</style>
-</head>
-<body>
-<h1>Welcome to nginx!</h1>
-<p>If you see this page, the nginx web server is successfully installed and
-working. Further configuration is required.</p>
-
-<p>For online documentation and support please refer to
-<a href="http://nginx.org/">nginx.org</a>.<br/>
-Commercial support is available at
-<a href="http://nginx.com/">nginx.com</a>.</p>
-
-<p><em>Thank you for using nginx.</em></p>
-</body>
-</html>
+200 OK
 ```
 
 
