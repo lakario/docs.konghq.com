@@ -8063,3 +8063,13 @@ tags:
     name: licenses
   - description: Consumer Groups
     name: consumer_groups
+  - description: Information
+    name: information
+  - description: Admins
+    name: admins
+  - description: Groups
+    name: groups
+  - description: Debug
+    name: debug
+  - description: RBAC
+    name: RBAC
