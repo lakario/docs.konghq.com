@@ -29,6 +29,9 @@ For example, for the following JSON:
 - Maximum length of object keys: 7 (`parents`)
 - Maximum length of strings: 6 (`Joseph`)
 
+**Note**: Length calculation for JSON strings and object entry names is based on UTF-8 characters, not bytes.
+
+
 Additionally, we have added a limit on the request body size, which can effectively reduce the resource overhead and potential attack risks associated with excessively large bodies.
 
 
